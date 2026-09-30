@@ -2,7 +2,7 @@
 
 Live, interactive simulations of how brain cells fire, from a single neuron up to a network of a thousand. Everything runs in the browser, straight from the equations.
 
-**[Try it live →](https://sukiraharris.github.io/neuron-simulator/)**
+**[Try it live →](https://sukiraharris.github.io/Neuron-Simulator/)**
 
 ![Screenshot of the simulator](screenshot.png)
 
