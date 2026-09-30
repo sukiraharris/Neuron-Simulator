@@ -1,0 +1,205 @@
+{
+  "cell_id": 489753277,
+  "sweeps": [
+    {
+      "sweep": 22,
+      "current_pA": -110.0,
+      "rate_hz": 0.0,
+      "first_isi_ms": null,
+      "last_isi_ms": null,
+      "isi_cv": null,
+      "trough_mv": null,
+      "latency_ms": null
+    },
+    {
+      "sweep": 23,
+      "current_pA": -90.0,
+      "rate_hz": 0.0,
+      "first_isi_ms": null,
+      "last_isi_ms": null,
+      "isi_cv": null,
+      "trough_mv": null,
+      "latency_ms": null
+    },
+    {
+      "sweep": 24,
+      "current_pA": -70.0,
+      "rate_hz": 0.0,
+      "first_isi_ms": null,
+      "last_isi_ms": null,
+      "isi_cv": null,
+      "trough_mv": null,
+      "latency_ms": null
+    },
+    {
+      "sweep": 25,
+      "current_pA": -50.0,
+      "rate_hz": 0.0,
+      "first_isi_ms": null,
+      "last_isi_ms": null,
+      "isi_cv": null,
+      "trough_mv": null,
+      "latency_ms": null
+    },
+    {
+      "sweep": 26,
+      "current_pA": -30.0,
+      "rate_hz": 0.0,
+      "first_isi_ms": null,
+      "last_isi_ms": null,
+      "isi_cv": null,
+      "trough_mv": null,
+      "latency_ms": null
+    },
+    {
+      "sweep": 27,
+      "current_pA": -10.0,
+      "rate_hz": 0.0,
+      "first_isi_ms": null,
+      "last_isi_ms": null,
+      "isi_cv": null,
+      "trough_mv": null,
+      "latency_ms": null
+    },
+    {
+      "sweep": 28,
+      "current_pA": 10.0,
+      "rate_hz": 0.0,
+      "first_isi_ms": null,
+      "last_isi_ms": null,
+      "isi_cv": null,
+      "trough_mv": null,
+      "latency_ms": null
+    },
+    {
+      "sweep": 29,
+      "current_pA": 30.0,
+      "rate_hz": 0.0,
+      "first_isi_ms": null,
+      "last_isi_ms": null,
+      "isi_cv": null,
+      "trough_mv": null,
+      "latency_ms": null
+    },
+    {
+      "sweep": 30,
+      "current_pA": 50.0,
+      "rate_hz": 0.0,
+      "first_isi_ms": null,
+      "last_isi_ms": null,
+      "isi_cv": null,
+      "trough_mv": null,
+      "latency_ms": null
+    },
+    {
+      "sweep": 39,
+      "current_pA": 60.0,
+      "rate_hz": 0.0,
+      "first_isi_ms": null,
+      "last_isi_ms": null,
+      "isi_cv": null,
+      "trough_mv": null,
+      "latency_ms": null
+    },
+    {
+      "sweep": 31,
+      "current_pA": 70.0,
+      "rate_hz": 2.0,
+      "first_isi_ms": 456.79,
+      "last_isi_ms": 456.79,
+      "isi_cv": null,
+      "trough_mv": -53.1875,
+      "latency_ms": 1135.1400000000003
+    },
+    {
+      "sweep": 40,
+      "current_pA": 70.0,
+      "rate_hz": 1.0,
+      "first_isi_ms": null,
+      "last_isi_ms": null,
+      "isi_cv": null,
+      "trough_mv": null,
+      "latency_ms": 1106.2150000000001
+    },
+    {
+      "sweep": 41,
+      "current_pA": 70.0,
+      "rate_hz": 0.0,
+      "first_isi_ms": null,
+      "last_isi_ms": null,
+      "isi_cv": null,
+      "trough_mv": null,
+      "latency_ms": null
+    },
+    {
+      "sweep": 42,
+      "current_pA": 80.0,
+      "rate_hz": 2.0,
+      "first_isi_ms": 66.30500000000006,
+      "last_isi_ms": 66.30500000000006,
+      "isi_cv": null,
+      "trough_mv": -50.906253814697266,
+      "latency_ms": 1092.8050000000003
+    },
+    {
+      "sweep": 43,
+      "current_pA": 80.0,
+      "rate_hz": 4.0,
+      "first_isi_ms": 82.45000000000013,
+      "last_isi_ms": 300.71000000000004,
+      "isi_cv": 0.44345057507861957,
+      "trough_mv": -53.125,
+      "latency_ms": 1077.1950000000002
+    },
+    {
+      "sweep": 44,
+      "current_pA": 80.0,
+      "rate_hz": 2.0,
+      "first_isi_ms": 616.5449999999998,
+      "last_isi_ms": 616.5449999999998,
+      "isi_cv": null,
+      "trough_mv": -51.625003814697266,
+      "latency_ms": 1087.4150000000002
+    },
+    {
+      "sweep": 32,
+      "current_pA": 90.0,
+      "rate_hz": 10.0,
+      "first_isi_ms": 44.95999999999989,
+      "last_isi_ms": 94.41499999999992,
+      "isi_cv": 0.2878921808562001,
+      "trough_mv": -51.503475189208984,
+      "latency_ms": 1056.9150000000002
+    },
+    {
+      "sweep": 33,
+      "current_pA": 110.0,
+      "rate_hz": 20.0,
+      "first_isi_ms": 22.710000000000008,
+      "last_isi_ms": 75.79000000000002,
+      "isi_cv": 0.27284570368754424,
+      "trough_mv": -51.02138137817383,
+      "latency_ms": 24.32000000000012
+    },
+    {
+      "sweep": 34,
+      "current_pA": 130.0,
+      "rate_hz": 27.0,
+      "first_isi_ms": 18.260000000000165,
+      "last_isi_ms": 45.315,
+      "isi_cv": 0.17270669592990068,
+      "trough_mv": -50.980770111083984,
+      "latency_ms": 18.504999999999995
+    },
+    {
+      "sweep": 36,
+      "current_pA": 170.0,
+      "rate_hz": 35.0,
+      "first_isi_ms": 8.08999999999993,
+      "last_isi_ms": 36.775000000000006,
+      "isi_cv": 0.22427241033376613,
+      "trough_mv": -49.23805236816406,
+      "latency_ms": 11.505000000000098
+    }
+  ]
+}
