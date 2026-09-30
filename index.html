@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A neuron on your screen · Sukira Harris</title>
+<meta name="description" content="Live, interactive simulations of neurons firing: the Hodgkin-Huxley model, Izhikevich cell types, and a 1,000-neuron network.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --slide: #EEEBF1;      /* pale stained-slide background */
+    --paper: #F8F6FA;
+    --ink: #1E1A2E;
+    --dim: #6B6480;
+    --rule: #D6D0DE;
+    --hema: #41338A;       /* hematoxylin: excitatory, voltage */
+    --eosin: #C8416B;      /* eosin: inhibitory, sodium inactivation */
+    --teal: #2F7E79;       /* potassium */
+    --serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+    --sans: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--slide); }
+  body {
+    margin: 0; color: var(--ink); font-family: var(--serif);
+    font-size: 18px; line-height: 1.6; background: var(--slide);
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 56px 24px 80px; }
+
+  header { max-width: 40rem; margin-bottom: 64px; }
+  h1 {
+    font-weight: 500; font-size: clamp(40px, 7vw, 76px); line-height: 1.02;
+    letter-spacing: -0.02em; margin: 0 0 20px;
+  }
+  .lede { font-size: 21px; line-height: 1.5; color: var(--ink); margin: 0; }
+  .byline { font-family: var(--sans); font-size: 14px; color: var(--dim); margin-top: 18px; }
+  .byline a { color: var(--hema); }
+
+  section {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 40px; padding: 48px 0; border-top: 1px solid var(--rule);
+  }
+  h2 { font-weight: 500; font-size: 30px; line-height: 1.15; margin: 0 0 16px; letter-spacing: -0.01em; }
+  .copy p { margin: 0 0 14px; max-width: 34ch; }
+  .copy p.try { font-style: italic; color: var(--dim); }
+
+  figure { margin: 0; }
+  .scope {
+    background: var(--paper); border: 1px solid var(--rule); border-radius: 6px;
+    padding: 14px 14px 10px;
+  }
+  canvas { display: block; width: 100%; }
+  .c-main { height: 260px; }
+  .c-small { height: 110px; margin-top: 6px; }
+  .c-strip { height: 38px; margin-top: 4px; }
+  .c-raster { height: 380px; }
+  .c-pop { height: 90px; margin-top: 6px; }
+
+  .legend, .readout {
+    font-family: var(--sans); font-size: 13px; color: var(--dim);
+    display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center;
+  }
+  .legend { margin: 8px 2px 2px; }
+  .swatch { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; vertical-align: middle; margin-right: 6px; }
+  .readout { margin-top: 14px; justify-content: space-between; }
+  .readout strong { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .controls {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px 24px; margin-top: 18px; font-family: var(--sans); font-size: 14px;
+  }
+  .control label { display: flex; justify-content: space-between; margin-bottom: 4px; color: var(--ink); }
+  .control output { color: var(--dim); font-variant-numeric: tabular-nums; }
+  input[type=range] { width: 100%; accent-color: var(--hema); }
+
+  .buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  button {
+    font-family: var(--sans); font-size: 14px; font-weight: 500;
+    padding: 8px 14px; border-radius: 4px; cursor: pointer;
+    border: 1px solid var(--rule); background: var(--paper); color: var(--ink);
+  }
+  button:hover { border-color: var(--hema); }
+  button.primary { background: var(--hema); border-color: var(--hema); color: #fff; }
+  button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--eosin); outline-offset: 2px; }
+
+  .type-note { font-family: var(--sans); font-size: 14px; color: var(--dim); margin-top: 12px; min-height: 2.8em; }
+
+  footer {
+    border-top: 1px solid var(--rule); padding-top: 28px; font-family: var(--sans);
+    font-size: 14px; color: var(--dim);
+  }
+  footer a { color: var(--hema); }
+
+  @media (max-width: 820px) {
+    .wrap { padding-top: 36px; }
+    section { grid-template-columns: 1fr; gap: 20px; }
+    .copy p { max-width: none; }
+    .c-raster { height: 300px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>A neuron on your screen</h1>
+    <p class="lede">Three live simulations of how brain cells fire, from a single cell up to a thousand. Everything here is computed in your browser, straight from the equations.</p>
+    <p class="byline">By <a href="https://sukiraharris.github.io/Personal-Website/">Sukira Harris</a></p>
+  </header>
+
+  <!-- Hodgkin-Huxley -->
+  <section id="hh">
+    <div class="copy">
+      <h2>One neuron, the Hodgkin–Huxley way</h2>
+      <p>In 1952, Alan Hodgkin and Andrew Huxley worked out how a nerve cell fires, work that won them the Nobel Prize. Sodium rushes in and the voltage shoots up. Potassium flows out and pulls it back down. That up-and-down is a spike.</p>
+      <p>Push current into the cell with the slider. Below about 6, it stays quiet. Above that, it fires on its own, and more current means faster firing.</p>
+      <p class="try">Try lowering sodium until the spikes vanish, or set current to zero and give the cell a single jolt.</p>
+    </div>
+    <figure>
+      <div class="scope">
+        <canvas id="hhV" class="c-main" role="img" aria-label="Membrane voltage of a simulated Hodgkin-Huxley neuron over the last 200 milliseconds"></canvas>
+        <canvas id="hhG" class="c-small" role="img" aria-label="Ion channel gate variables m, h and n over time"></canvas>
+        <div class="legend">
+          <span><span class="swatch" style="background:var(--hema)"></span>m: sodium gates opening</span>
+          <span><span class="swatch" style="background:var(--eosin)"></span>h: sodium gates closing</span>
+          <span><span class="swatch" style="background:var(--teal)"></span>n: potassium gates opening</span>
+        </div>
+      </div>
+      <div class="readout">
+        <span>Firing rate: <strong id="hhRate">0</strong> spikes per second</span>
+        <span>Voltage: <strong id="hhVolt">-65</strong> mV</span>
+      </div>
+      <div class="controls">
+        <div class="control"><label for="hhI">Input current <output id="hhIo">10</output></label><input id="hhI" type="range" min="0" max="40" step="0.5" value="10"></div>
+        <div class="control"><label for="hhNa">Sodium channels <output id="hhNao">120</output></label><input id="hhNa" type="range" min="0" max="200" step="1" value="120"></div>
+        <div class="control"><label for="hhK">Potassium channels <output id="hhKo">36</output></label><input id="hhK" type="range" min="0" max="80" step="1" value="36"></div>
+      </div>
+      <div class="buttons">
+        <button class="primary" id="hhPulse">Give it a jolt</button>
+        <button id="hhPause">Pause</button>
+        <button id="hhReset">Reset</button>
+      </div>
+    </figure>
+  </section>
+
+  <!-- Izhikevich types -->
+  <section id="iz">
+    <div class="copy">
+      <h2>Different cells, different rhythms</h2>
+      <p>Real neurons don't all fire the same way. Eugene Izhikevich found a two-equation model that can imitate many cell types just by changing four numbers.</p>
+      <p>Pick a cell type. The current switches on partway through, so you can see how each one reacts.</p>
+      <p class="try">Compare how regular spiking slows down over time while fast spiking never tires.</p>
+    </div>
+    <figure>
+      <div class="scope">
+        <canvas id="izV" class="c-main" role="img" aria-label="Membrane voltage of the selected Izhikevich neuron type"></canvas>
+        <canvas id="izI" class="c-strip" role="img" aria-label="Input current turning on"></canvas>
+        <div class="legend"><span><span class="swatch" style="background:var(--dim)"></span>Input current</span></div>
+      </div>
+      <div class="buttons" id="izTypes" role="group" aria-label="Neuron type">
+        <button data-type="RS" aria-pressed="true">Regular spiking</button>
+        <button data-type="IB" aria-pressed="false">Intrinsically bursting</button>
+        <button data-type="CH" aria-pressed="false">Chattering</button>
+        <button data-type="FS" aria-pressed="false">Fast spiking</button>
+      </div>
+      <p class="type-note" id="izNote"></p>
+      <div class="controls">
+        <div class="control"><label for="izCur">Input current <output id="izCuro">10</output></label><input id="izCur" type="range" min="0" max="20" step="0.5" value="10"></div>
+      </div>
+      <div class="buttons">
+        <button class="primary" id="izReplay">Replay</button>
+        <button id="izPause">Pause</button>
+      </div>
+    </figure>
+  </section>
+
+  <!-- Network -->
+  <section id="net">
+    <div class="copy">
+      <h2>A thousand neurons talking</h2>
+      <p>Here are 800 excitatory cells, which make their neighbors more likely to fire, and 200 inhibitory cells, which calm them down. Each one also gets random input, like background chatter from the rest of the brain.</p>
+      <p>Every dot is one spike. Each row is a cell, and time runs left to right. The vertical stripes are groups of cells firing together, rhythms like the alpha and gamma waves measured in real brains.</p>
+      <p class="try">Turn the connections down to zero and watch the rhythm dissolve into scattered noise.</p>
+    </div>
+    <figure>
+      <div class="scope">
+        <canvas id="netR" class="c-raster" role="img" aria-label="Raster plot of spikes from 1000 simulated neurons over the last second"></canvas>
+        <canvas id="netP" class="c-pop" role="img" aria-label="Total number of spikes across the network over time"></canvas>
+        <div class="legend">
+          <span><span class="dot" style="background:var(--hema)"></span>Excitatory cells</span>
+          <span><span class="dot" style="background:var(--eosin)"></span>Inhibitory cells</span>
+          <span><span class="swatch" style="background:var(--ink)"></span>Whole-network activity</span>
+        </div>
+      </div>
+      <div class="readout">
+        <span>Average firing rate: <strong id="netRate">0</strong> spikes per second</span>
+        <span>Simulated time: <strong id="netTime">0.0</strong> s</span>
+      </div>
+      <div class="controls">
+        <div class="control"><label for="netC">Connection strength <output id="netCo">1.0</output></label><input id="netC" type="range" min="0" max="2" step="0.05" value="1"></div>
+        <div class="control"><label for="netN">Background noise <output id="netNo">1.0</output></label><input id="netN" type="range" min="0" max="2" step="0.05" value="1"></div>
+      </div>
+      <div class="buttons">
+        <button id="netPause">Pause</button>
+        <button id="netReset">Rewire network</button>
+      </div>
+    </figure>
+  </section>
+
+  <footer>
+    <p>Built by <a href="https://sukiraharris.github.io/Personal-Website/">Sukira Harris</a>. Models: Hodgkin &amp; Huxley (1952), Izhikevich (2003). Vanilla JavaScript and canvas, no libraries.</p>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const root = getComputedStyle(document.documentElement);
+  const C = {
+    ink: root.getPropertyValue('--ink').trim(),
+    dim: root.getPropertyValue('--dim').trim(),
+    rule: root.getPropertyValue('--rule').trim(),
+    hema: root.getPropertyValue('--hema').trim(),
+    eosin: root.getPropertyValue('--eosin').trim(),
+    teal: root.getPropertyValue('--teal').trim(),
+  };
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- Canvas helpers ----------
+  class Plot {
+    constructor(el, pad = { l: 40, r: 8, t: 8, b: 22 }) {
+      this.el = el; this.pad = pad; this.resize();
+      new ResizeObserver(() => this.resize()).observe(el);
+    }
+    resize() {
+      const dpr = window.devicePixelRatio || 1;
+      const r = this.el.getBoundingClientRect();
+      this.w = r.width; this.h = r.height;
+      this.el.width = Math.max(1, Math.round(r.width * dpr));
+      this.el.height = Math.max(1, Math.round(r.height * dpr));
+      this.ctx = this.el.getContext('2d');
+      this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    get x0() { return this.pad.l; }
+    get y0() { return this.pad.t; }
+    get pw() { return this.w - this.pad.l - this.pad.r; }
+    get ph() { return this.h - this.pad.t - this.pad.b; }
+    y(v, lo, hi) { return this.y0 + (1 - (v - lo) / (hi - lo)) * this.ph; }
+  }
+
+  function axes(p, lo, hi, ticks, unit, windowMs, barMs) {
+    const g = p.ctx;
+    g.clearRect(0, 0, p.w, p.h);
+    g.font = '11px "Public Sans", system-ui, sans-serif';
+    g.textBaseline = 'middle'; g.textAlign = 'right';
+    g.lineWidth = 1;
+    for (const t of ticks) {
+      const y = Math.round(p.y(t, lo, hi)) + 0.5;
+      g.strokeStyle = C.rule;
+      g.beginPath(); g.moveTo(p.x0, y); g.lineTo(p.x0 + p.pw, y); g.stroke();
+      g.fillStyle = C.dim; g.fillText(String(t), p.x0 - 6, y);
+    }
+    if (unit) { g.textAlign = 'left'; g.fillText(unit, 2, p.y0 + 4); }
+    if (barMs && p.pad.b > 12) {
+      const len = (barMs / windowMs) * p.pw;
+      const xe = p.x0 + p.pw, yb = p.h - 8;
+      g.strokeStyle = C.ink; g.lineWidth = 2;
+      g.beginPath(); g.moveTo(xe - len, yb); g.lineTo(xe, yb); g.stroke();
+      g.fillStyle = C.dim; g.textAlign = 'right';
+      g.fillText(barMs + ' ms', xe - len - 6, yb);
+    }
+  }
+
+  function line(p, buf, head, lo, hi, color, width) {
+    const g = p.ctx, n = buf.length;
+    g.strokeStyle = color; g.lineWidth = width; g.lineJoin = 'round';
+    g.beginPath();
+    for (let k = 0; k < n; k++) {
+      const v = buf[(head + k) % n];
+      const x = p.x0 + (k / (n - 1)) * p.pw;
+      const y = p.y(Math.max(lo, Math.min(hi, v)), lo, hi);
+      if (k === 0) g.moveTo(x, y); else g.lineTo(x, y);
+    }
+    g.stroke();
+  }
+
+  function watchVisible(el, state) {
+    state.visible = true;
+    new IntersectionObserver(es => { state.visible = es[0].isIntersecting; }).observe(el);
+  }
+
+  function bindSlider(id, fmt, onInput) {
+    const input = document.getElementById(id), out = document.getElementById(id + 'o');
+    const update = () => { out.textContent = fmt(+input.value); onInput(+input.value); };
+    input.addEventListener('input', update); update();
+  }
+
+  function pauseButton(id, state) {
+    const b = document.getElementById(id);
+    const sync = () => { b.textContent = state.running ? 'Pause' : 'Play'; };
+    b.addEventListener('click', () => { state.running = !state.running; sync(); });
+    sync();
+    return sync;
+  }
+
+  // ---------- 1. Hodgkin-Huxley ----------
+  const HH = { gNa: 120, gK: 36, gL: 0.3, ENa: 50, EK: -77, EL: -54.387, I: 10, running: !reduceMotion };
+  const HH_WIN = 200, HH_SAMPLE = 0.2, HH_DT = 0.01, HH_N = HH_WIN / HH_SAMPLE;
+  const hhBuf = { V: new Float32Array(HH_N), m: new Float32Array(HH_N), h: new Float32Array(HH_N), n: new Float32Array(HH_N), head: 0 };
+
+  function rates(V) {
+    const x1 = V + 40, x2 = V + 55;
+    return [
+      Math.abs(x1) < 1e-6 ? 1 : 0.1 * x1 / (1 - Math.exp(-x1 / 10)),
+      4 * Math.exp(-(V + 65) / 18),
+      0.07 * Math.exp(-(V + 65) / 20),
+      1 / (1 + Math.exp(-(V + 35) / 10)),
+      Math.abs(x2) < 1e-6 ? 0.1 : 0.01 * x2 / (1 - Math.exp(-x2 / 10)),
+      0.125 * Math.exp(-(V + 65) / 80),
+    ];
+  }
+
+  function hhReset() {
+    const V = -65, [am, bm, ah, bh, an, bn] = rates(V);
+    Object.assign(HH, { V, m: am / (am + bm), h: ah / (ah + bh), n: an / (an + bn), t: 0, pulse: 0, spikes: [], sub: 0 });
+    for (const k of ['V', 'm', 'h', 'n']) hhBuf[k].fill(k === 'V' ? V : HH[k]);
+    hhBuf.head = 0;
+  }
+
+  function hhStep() {
+    const { V, m, h, n } = HH;
+    const [am, bm, ah, bh, an, bn] = rates(V);
+    const Iext = HH.I + (HH.pulse > 0 ? 20 : 0);
+    const INa = HH.gNa * m * m * m * h * (V - HH.ENa);
+    const IK = HH.gK * n * n * n * n * (V - HH.EK);
+    const IL = HH.gL * (V - HH.EL);
+    HH.V = V + HH_DT * (Iext - INa - IK - IL);
+    HH.m = m + HH_DT * (am * (1 - m) - bm * m);
+    HH.h = h + HH_DT * (ah * (1 - h) - bh * h);
+    HH.n = n + HH_DT * (an * (1 - n) - bn * n);
+    if (V < 0 && HH.V >= 0) HH.spikes.push(HH.t);
+    HH.t += HH_DT;
+    if (HH.pulse > 0) HH.pulse -= HH_DT;
+    if (++HH.sub >= HH_SAMPLE / HH_DT) {
+      HH.sub = 0;
+      const i = hhBuf.head;
+      hhBuf.V[i] = HH.V; hhBuf.m[i] = HH.m; hhBuf.h[i] = HH.h; hhBuf.n[i] = HH.n;
+      hhBuf.head = (i + 1) % HH_N;
+    }
+  }
+
+  const hhV = new Plot(document.getElementById('hhV'));
+  const hhG = new Plot(document.getElementById('hhG'), { l: 40, r: 8, t: 6, b: 6 });
+  const hhRate = document.getElementById('hhRate'), hhVolt = document.getElementById('hhVolt');
+
+  function hhFrame() {
+    if (HH.running && HH.visible) {
+      for (let s = 0; s < 80; s++) hhStep(); // 0.8 ms per frame
+      while (HH.spikes.length && HH.spikes[0] < HH.t - 1000) HH.spikes.shift();
+    }
+    axes(hhV, -80, 50, [-80, -40, 0, 40], 'mV', HH_WIN, 20);
+    line(hhV, hhBuf.V, hhBuf.head, -80, 50, C.hema, 2);
+    axes(hhG, 0, 1, [0, 1], '', HH_WIN, 0);
+    line(hhG, hhBuf.m, hhBuf.head, 0, 1, C.hema, 1.5);
+    line(hhG, hhBuf.h, hhBuf.head, 0, 1, C.eosin, 1.5);
+    line(hhG, hhBuf.n, hhBuf.head, 0, 1, C.teal, 1.5);
+    const window = Math.min(1000, HH.t);
+    hhRate.textContent = window > 50 ? Math.round(HH.spikes.length * 1000 / window) : 0;
+    hhVolt.textContent = Math.round(HH.V);
+  }
+
+  hhReset();
+  watchVisible(document.getElementById('hh'), HH);
+  bindSlider('hhI', v => v.toFixed(1), v => HH.I = v);
+  bindSlider('hhNa', v => v, v => HH.gNa = v);
+  bindSlider('hhK', v => v, v => HH.gK = v);
+  const hhSync = pauseButton('hhPause', HH);
+  document.getElementById('hhPulse').addEventListener('click', () => { HH.pulse = 1; if (!HH.running) { HH.running = true; hhSync(); } });
+  document.getElementById('hhReset').addEventListener('click', () => {
+    hhReset();
+    for (const [id, v] of [['hhI', 10], ['hhNa', 120], ['hhK', 36]]) {
+      const el = document.getElementById(id); el.value = v; el.dispatchEvent(new Event('input'));
+    }
+  });
+
+  // ---------- 2. Izhikevich cell types ----------
+  const TYPES = {
+    RS: { a: 0.02, b: 0.2, c: -65, d: 8, note: 'The most common cell in the cortex. It fires steadily, then slows down as it adapts to the input.' },
+    IB: { a: 0.02, b: 0.2, c: -55, d: 4, note: 'Opens with a rapid burst of spikes, then settles into single spikes.' },
+    CH: { a: 0.02, b: 0.2, c: -50, d: 2, note: 'Fires tight bursts again and again. These cells help drive fast brain rhythms.' },
+    FS: { a: 0.1, b: 0.2, c: -65, d: 2, note: 'Inhibitory cells that fire very fast and never slow down. They keep the rest of the network in check.' },
+  };
+  const IZ = { I: 10, running: !reduceMotion, type: 'RS' };
+  const IZ_DT = 0.25, IZ_WIN = 400, IZ_N = IZ_WIN / IZ_DT, IZ_ONSET = 50;
+  const izBuf = { v: new Float32Array(IZ_N), i: new Float32Array(IZ_N), head: 0 };
+
+  function izReset() {
+    const p = TYPES[IZ.type];
+    Object.assign(IZ, p, { v: -65, u: p.b * -65, t: 0 });
+    izBuf.v.fill(-65); izBuf.i.fill(0); izBuf.head = 0;
+    document.getElementById('izNote').textContent = p.note;
+  }
+
+  function izStep() {
+    const I = IZ.t >= IZ_ONSET ? IZ.I : 0;
+    const v = IZ.v;
+    IZ.v = v + IZ_DT * (0.04 * v * v + 5 * v + 140 - IZ.u + I);
+    IZ.u += IZ_DT * IZ.a * (IZ.b * IZ.v - IZ.u);
+    let rec = IZ.v;
+    if (IZ.v >= 30) { rec = 30; IZ.v = IZ.c; IZ.u += IZ.d; }
+    const k = izBuf.head;
+    izBuf.v[k] = rec; izBuf.i[k] = I; izBuf.head = (k + 1) % IZ_N;
+    IZ.t += IZ_DT;
+  }
+
+  const izV = new Plot(document.getElementById('izV'));
+  const izI = new Plot(document.getElementById('izI'), { l: 40, r: 8, t: 4, b: 4 });
+
+  function izFrame() {
+    if (IZ.running && IZ.visible) for (let s = 0; s < 8; s++) izStep(); // 2 ms per frame
+    axes(izV, -85, 35, [-80, -40, 0, 30], 'mV', IZ_WIN, 50);
+    line(izV, izBuf.v, izBuf.head, -85, 35, C.hema, 1.8);
+    izI.ctx.clearRect(0, 0, izI.w, izI.h);
+    line(izI, izBuf.i, izBuf.head, -1, 21, C.dim, 1.5);
+  }
+
+  izReset();
+  watchVisible(document.getElementById('iz'), IZ);
+  bindSlider('izCur', v => v.toFixed(1), v => IZ.I = v);
+  const izSync = pauseButton('izPause', IZ);
+  document.querySelectorAll('#izTypes button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('#izTypes button').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+    IZ.type = b.dataset.type; izReset();
+    if (!IZ.running) { IZ.running = true; izSync(); }
+  }));
+  document.getElementById('izReplay').addEventListener('click', () => { izReset(); if (!IZ.running) { IZ.running = true; izSync(); } });
+
+  // ---------- 3. Network (Izhikevich 2003) ----------
+  const N = 1000, NE = 800, NET_WIN = 1000;
+  const NET = { coupling: 1, noise: 1, running: !reduceMotion };
+  const a = new Float32Array(N), b = new Float32Array(N), c = new Float32Array(N), d = new Float32Array(N);
+  const v = new Float32Array(N), u = new Float32Array(N), I = new Float32Array(N);
+  const S = new Float32Array(N * N); // column-major: S[j*N + i] = weight from j to i
+  const popBuf = new Float32Array(NET_WIN);
+  let spikeT = [], spikeI = [], spikeStart = 0, popHead = 0;
+
+  function randn() {
+    let x = 0, y = 0;
+    while (x === 0) x = Math.random();
+    while (y === 0) y = Math.random();
+    return Math.sqrt(-2 * Math.log(x)) * Math.cos(2 * Math.PI * y);
+  }
+
+  function netReset() {
+    for (let i = 0; i < N; i++) {
+      const r = Math.random();
+      if (i < NE) { a[i] = 0.02; b[i] = 0.2; c[i] = -65 + 15 * r * r; d[i] = 8 - 6 * r * r; }
+      else { a[i] = 0.02 + 0.08 * r; b[i] = 0.25 - 0.05 * r; c[i] = -65; d[i] = 2; }
+      v[i] = -65; u[i] = b[i] * -65;
+    }
+    for (let j = 0; j < N; j++) {
+      const base = j * N, exc = j < NE;
+      for (let i = 0; i < N; i++) S[base + i] = exc ? 0.5 * Math.random() : -Math.random();
+    }
+    spikeT = []; spikeI = []; spikeStart = 0; popBuf.fill(0); popHead = 0; NET.t = 0;
+  }
+
+  const fired = new Int32Array(N);
+  function netStep() { // 1 ms
+    let nf = 0;
+    for (let i = 0; i < N; i++) {
+      I[i] = (i < NE ? 5 : 2) * randn() * NET.noise;
+      if (v[i] >= 30) {
+        fired[nf++] = i; v[i] = c[i]; u[i] += d[i];
+        spikeT.push(NET.t); spikeI.push(i);
+      }
+    }
+    const k = NET.coupling;
+    if (k > 0) {
+      for (let f = 0; f < nf; f++) {
+        const base = fired[f] * N;
+        for (let i = 0; i < N; i++) I[i] += k * S[base + i];
+      }
+    }
+    for (let i = 0; i < N; i++) {
+      let vi = v[i];
+      vi += 0.5 * (0.04 * vi * vi + 5 * vi + 140 - u[i] + I[i]);
+      vi += 0.5 * (0.04 * vi * vi + 5 * vi + 140 - u[i] + I[i]);
+      v[i] = vi;
+      u[i] += a[i] * (b[i] * vi - u[i]);
+    }
+    popBuf[popHead] = nf; popHead = (popHead + 1) % NET_WIN;
+    NET.t += 1;
+  }
+
+  const netR = new Plot(document.getElementById('netR'), { l: 40, r: 8, t: 6, b: 6 });
+  const netP = new Plot(document.getElementById('netP'), { l: 40, r: 8, t: 6, b: 22 });
+  const netRate = document.getElementById('netRate'), netTime = document.getElementById('netTime');
+  const smooth = new Float32Array(NET_WIN);
+
+  function netFrame() {
+    if (NET.running && NET.visible) {
+      for (let s = 0; s < 3; s++) netStep();
+      const cutoff = NET.t - NET_WIN;
+      while (spikeStart < spikeT.length && spikeT[spikeStart] < cutoff) spikeStart++;
+      if (spikeStart > 20000) { spikeT = spikeT.slice(spikeStart); spikeI = spikeI.slice(spikeStart); spikeStart = 0; }
+    }
+    // raster
+    const g = netR.ctx;
+    g.clearRect(0, 0, netR.w, netR.h);
+    g.font = '11px "Public Sans", system-ui, sans-serif';
+    g.textAlign = 'right'; g.textBaseline = 'middle'; g.fillStyle = C.dim;
+    const yDiv = netR.y0 + (NE / N) * netR.ph;
+    g.fillText('E', netR.x0 - 8, netR.y0 + (NE / N) * netR.ph / 2);
+    g.fillText('I', netR.x0 - 8, yDiv + (netR.ph - (yDiv - netR.y0)) / 2);
+    g.strokeStyle = C.rule; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(netR.x0, Math.round(yDiv) + 0.5); g.lineTo(netR.x0 + netR.pw, Math.round(yDiv) + 0.5); g.stroke();
+    const t0 = NET.t - NET_WIN, sx = netR.pw / NET_WIN, sy = netR.ph / N;
+    const dw = Math.max(1.4, sx * 1.4), dh = Math.max(1.2, sy * 1.2);
+    for (const [lo, hi, col] of [[0, NE, C.hema], [NE, N, C.eosin]]) {
+      g.fillStyle = col;
+      for (let k = spikeStart; k < spikeT.length; k++) {
+        const i = spikeI[k];
+        if (i < lo || i >= hi) continue;
+        g.fillRect(netR.x0 + (spikeT[k] - t0) * sx, netR.y0 + i * sy, dw, dh);
+      }
+    }
+    // population activity (5 ms box smoothing)
+    let total = 0;
+    for (let k = 0; k < NET_WIN; k++) {
+      let s = 0;
+      for (let j = -2; j <= 2; j++) s += popBuf[(popHead + k + j + NET_WIN) % NET_WIN];
+      smooth[k] = s / 5; total += popBuf[k];
+    }
+    axes(netP, 0, 40, [0, 20, 40], '', NET_WIN, 100);
+    line(netP, smooth, 0, 0, 40, C.ink, 1.5);
+    const span = Math.min(NET_WIN, NET.t);
+    netRate.textContent = span > 50 ? (total * 1000 / span / N).toFixed(1) : '0.0';
+    netTime.textContent = (NET.t / 1000).toFixed(1);
+  }
+
+  netReset();
+  watchVisible(document.getElementById('net'), NET);
+  bindSlider('netC', v => v.toFixed(2), v => NET.coupling = v);
+  bindSlider('netN', v => v.toFixed(2), v => NET.noise = v);
+  pauseButton('netPause', NET);
+  document.getElementById('netReset').addEventListener('click', netReset);
+
+  // ---------- Loop ----------
+  function frame() { hhFrame(); izFrame(); netFrame(); requestAnimationFrame(frame); }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
